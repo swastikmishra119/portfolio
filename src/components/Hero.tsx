@@ -62,7 +62,7 @@ const Hero = memo(() => {
   }, [handleScroll]);
   
   return (
-    <section id="hero" className="h-screen relative overflow-hidden transition-colors duration-300 gpu-accelerated">
+        <section className="relative h-screen bg-dark-bg transition-colors duration-300 overflow-hidden">
       {/* Black background that fades to reveal gradient */}
       <motion.div 
         className="absolute inset-0 bg-black z-0 animation-optimized motion-smooth"
@@ -121,39 +121,56 @@ const Hero = memo(() => {
       </div>
       
       {/* Scroll indicator */}
-      <motion.div 
-        className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 z-10 animation-optimized motion-smooth"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ 
-          opacity: (isVisible && scrollIndicatorVisible) ? 1 : 0, 
-          y: (isVisible && scrollIndicatorVisible) ? 0 : 30
-        }}
-        transition={{ 
-          duration: 0.6, 
-          ease: [0.25, 0.46, 0.45, 0.94]
-        }}
-      >
-        <a 
-          href="#about" 
-          className="text-gray-400 hover:text-gray-300 transition-optimized cursor-pointer inline-block hover:scale-110 gpu-accelerated"
+      {(isVisible && scrollIndicatorVisible) && (
+        <motion.div 
+          className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 z-50 group animation-optimized motion-smooth"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ 
+            duration: 0.6, 
+            ease: [0.25, 0.46, 0.45, 0.94],
+            delay: 0.5
+          }}
         >
-          <motion.svg 
-            className="w-5 h-5 sm:w-6 sm:h-6 animation-optimized" 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-            animate={{ y: [0, 5, 0] }}
-            transition={motionVariants.arrowAnimation}
+          <button 
+            onClick={() => {
+              const aboutSection = document.getElementById('about');
+              if (aboutSection) {
+                aboutSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }}
+            className="text-gray-400 hover:text-gray-300 transition-all duration-300 cursor-pointer inline-block hover:scale-110 relative"
           >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={2} 
-              d="M19 9l-7 7-7-7" 
-            />
-          </motion.svg>
-        </a>
-      </motion.div>
+            <motion.svg 
+              className="w-5 h-5 sm:w-6 sm:h-6" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+              animate={{ y: [0, 5, 0] }}
+              transition={{
+                duration: 2, 
+                repeat: Infinity, 
+                ease: "easeInOut"
+              }}
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M19 9l-7 7-7-7" 
+              />
+            </motion.svg>
+            
+            {/* Tooltip */}
+            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+              <div className="bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                Next section
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
+              </div>
+            </div>
+          </button>
+        </motion.div>
+      )}
     </section>
   )
 });

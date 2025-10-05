@@ -5,6 +5,7 @@ import { motion } from 'motion/react'
 import { GraduationCap, Briefcase, Building, Users } from "lucide-react";
 import { GlowingEffect } from "./ui/glowing-effect";
 import GradientText from './ui/GradientText';
+import GlareHover from './ui/GlareHover';
 
 const WorkHistory = () => {
   const [animateCards, setAnimateCards] = useState(false);
@@ -64,15 +65,21 @@ const WorkHistory = () => {
   ];
 
   return (
-    <section id="work-history" className="min-h-screen bg-dark-bg transition-colors duration-300 py-20 pb-96" style={{scrollMarginTop: '4rem'}}>
+    <section id="work-history" className="min-h-screen bg-dark-bg transition-colors duration-300 py-20 relative" style={{scrollMarginTop: '4rem'}}>
       <div className="flex items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl w-full">
         <div className="text-center mb-16">
           <motion.h2 
             className="text-3xl sm:text-4xl md:text-5xl font-black mb-6"
-            initial={{ opacity: 0, y: 60 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+            initial={{ opacity: 0, y: 60, scale: 0.6, rotateX: -45 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
+            transition={{ 
+              duration: 1.3, 
+              ease: [0.16, 1, 0.3, 1],
+              type: "spring",
+              stiffness: 80,
+              damping: 15
+            }}
             viewport={{ once: true, amount: 0.3 }}
           >
             <GradientText
@@ -85,9 +92,15 @@ const WorkHistory = () => {
           </motion.h2>
           <motion.p 
             className="text-sm text-gray-400 max-w-3xl mx-auto uppercase font-bold tracking-wide transition-colors duration-300"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.2 }}
+            initial={{ opacity: 0, y: 30, rotateY: 90, scale: 0.5 }}
+            whileInView={{ opacity: 1, y: 0, rotateY: 0, scale: 1 }}
+            transition={{ 
+              duration: 1.0, 
+              ease: [0.25, 1, 0.5, 1], 
+              delay: 0.3,
+              type: "spring",
+              stiffness: 100
+            }}
             viewport={{ once: true, amount: 0.3 }}
           >
             The positions I have worked in my career so far
@@ -122,8 +135,8 @@ const WorkHistory = () => {
               <motion.div
                 key={experience.id}
                 className="relative flex items-center"
-                initial={{ opacity: 0, y: 80 }}
-                animate={animateCards ? { opacity: 1, y: 0 } : { opacity: 0, y: 80 }}
+                initial={{ opacity: 0, y: 60, scale: 0.95 }}
+                animate={animateCards ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 60, scale: 0.95 }}
                 transition={{ 
                   duration: 0.8, 
                   ease: [0.25, 0.46, 0.45, 0.94], 
@@ -178,75 +191,94 @@ interface ExperienceCardProps {
 const ExperienceCard = ({ experience }: ExperienceCardProps) => {
   return (
     <motion.div 
-      className="relative h-full min-h-[160px]"
-      whileHover={{ y: -8, transition: { duration: 0.3, ease: "easeOut" } }}
+      className="relative w-full h-[180px]"
+      whileHover={{ 
+        y: -6, 
+        scale: 1.02,
+        transition: { 
+          duration: 0.3, 
+          ease: "easeOut"
+        } 
+      }}
     >
-      <div className="relative h-full rounded-2xl border-2 border-dark-border p-2 md:rounded-3xl md:p-3 transition-colors duration-300">
-        <GlowingEffect
-          spread={40}
-          glow={true}
-          disabled={false}
-          proximity={60}
-          inactiveZone={0.01}
-        />
-        <div className="relative flex h-full flex-col justify-between gap-4 overflow-hidden rounded-xl p-4 md:p-5 backdrop-blur-sm bg-dark-surface/50 transition-colors duration-300">
-          <div className="relative flex flex-1 gap-6">
-            {/* Logo column - left side */}
-            <div className="flex-1 flex items-center justify-center">
-              {(experience.hasLogo || experience.hasText) && (
-                <div className="flex items-center gap-2 h-12 md:h-14">
-                  {experience.hasLogo && experience.logoPath && (
-                    <img 
-                      src={experience.logoPath} 
-                      alt={`${experience.title} Logo`}
-                      className={`object-contain transition-all duration-300 ${
-                        experience.title === "To The New" 
-                          ? "w-8 h-8 md:w-10 md:h-10" 
-                          : experience.title === "Microsoft"
-                          ? "w-6 h-6 md:w-8 md:h-8"
-                          : "w-6 h-6 md:w-8 md:h-8"
-                      }`}
-                    />
-                  )}
-                  {experience.hasText && experience.textPath && (
-                    <img 
-                      src={experience.textPath} 
-                      alt={`${experience.title} Text`}
-                      className={`object-contain transition-all duration-300 ${
-                        experience.title === "To The New" 
-                          ? "h-12 md:h-14" 
-                          : experience.title === "Microsoft"
-                          ? "h-6 md:h-8"
-                          : experience.title === "Samsung"
-                          ? "h-5 md:h-6"
-                          : "h-6 md:h-8"
-                      }`}
-                      style={{
-                        filter: experience.title === "UPES" 
-                          ? 'invert(1) brightness(2) contrast(2)'
-                          : 'var(--logo-filter, none)'
-                      }}
-                    />
-                  )}
+      <GlareHover
+        width="100%"
+        height="100%"
+        background="transparent"
+        borderRadius="1.5rem"
+        borderColor="transparent"
+        glareColor="#c4b5fd"
+        glareOpacity={0.2}
+        glareAngle={-30}
+        glareSize={275}
+        transitionDuration={1200}
+        playOnce={false}
+        className="w-full h-full"
+        style={{ border: 'none' }}
+      >
+        <div className="relative h-full rounded-2xl border-2 border-dark-border p-2 md:rounded-3xl md:p-3 transition-colors duration-300 w-full">
+          <GlowingEffect
+            spread={40}
+            glow={true}
+            disabled={false}
+            proximity={60}
+            inactiveZone={0.01}
+          />
+          <div className="relative flex h-full flex-col justify-between gap-4 overflow-hidden rounded-xl p-4 md:p-5 backdrop-blur-sm bg-dark-surface/50 transition-colors duration-300">
+            <div className="relative flex flex-1 gap-6">
+              {/* Logo column - left side */}
+              <div className="flex-1 flex items-center justify-center">
+                {(experience.hasLogo || experience.hasText) && (
+                  <div className="flex items-center gap-2 h-12 md:h-14">
+                    {experience.hasLogo && experience.logoPath && (
+                      <img 
+                        src={experience.logoPath} 
+                        alt={`${experience.title} Logo`}
+                        className={`object-contain transition-all duration-300 ${
+                          experience.title === "To The New" 
+                            ? "w-10 h-10 md:w-12 md:h-12" 
+                            : "w-8 h-8"
+                        }`}
+                      />
+                    )}
+                    {experience.hasText && experience.textPath && (
+                      <img 
+                        src={experience.textPath} 
+                        alt={`${experience.title} Text`}
+                        className={`object-contain transition-all duration-300 ${
+                          experience.title === "To The New" 
+                            ? "h-10 md:h-12" 
+                            : experience.title === "Samsung"
+                            ? "h-5 md:h-6"
+                            : "h-8"
+                        }`}
+                        style={{
+                          filter: experience.title === "UPES" 
+                            ? 'invert(1) brightness(2) contrast(2)'
+                            : 'var(--logo-filter, none)'
+                        }}
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
+              
+              {/* Content column - right side */}
+              <div className="flex-1 flex flex-col justify-center space-y-2">
+                <h4 className="font-sans text-sm font-bold text-secondary-400 md:text-base leading-tight">
+                  {experience.subtitle}
+                </h4>
+                <p className="font-sans text-xs text-dark-text-secondary md:text-sm leading-relaxed transition-colors duration-300">
+                  {experience.description}
+                </p>
+                <div className="px-3 py-1 bg-secondary-500/20 text-secondary-300 rounded-md text-xs font-medium w-fit">
+                  {experience.dateRange}
                 </div>
-              )}
-            </div>
-            
-            {/* Content column - right side */}
-            <div className="flex-1 flex flex-col justify-center space-y-3">
-              <h4 className="font-sans text-sm font-bold text-secondary-400 md:text-base">
-                {experience.subtitle}
-              </h4>
-              <p className="font-sans text-xs text-dark-text-secondary md:text-sm leading-relaxed transition-colors duration-300">
-                {experience.description}
-              </p>
-              <div className="px-3 py-1 bg-secondary-500/20 text-secondary-300 rounded-md text-sm font-medium w-fit">
-                {experience.dateRange}
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </GlareHover>
     </motion.div>
   );
 };
