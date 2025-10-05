@@ -11,7 +11,8 @@ const Contact = () => {
           style={{ 
             backgroundImage: 'url(https://cdn.prod.website-files.com/672e948e890dd8b9cc4d58dc/674132fbca99e012bda8855f_lkl9.webp)',
             backgroundPosition: 'center',
-            backgroundSize: '125%'
+            backgroundSize: '125%',
+            opacity: '0.85'
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-60" />
