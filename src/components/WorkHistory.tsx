@@ -317,24 +317,26 @@ const ExperienceCard = ({ experience, isExpanded, onToggle, expandDirection }: E
               </div>
             </div>
             
-            {/* Hover hint */}
-            <AnimatePresence>
-              {isHovered && !isExpanded && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute bottom-2 right-2 text-[10px] uppercase tracking-wider text-gray-600 font-bold"
-                >
-                  Click for more info
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {/* Hover hint - removed from inside card */}
           </div>
         </div>
       </GlareHover>
     </motion.div>
+
+    {/* Click for more info text - below the card */}
+    <AnimatePresence>
+      {isHovered && !isExpanded && (
+        <motion.div
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -5 }}
+          transition={{ duration: 0.2 }}
+          className="flex justify-center mt-2 text-xs text-gray-500 font-medium uppercase tracking-wide"
+        >
+          Click for more info
+        </motion.div>
+      )}
+    </AnimatePresence>
 
     {/* Connecting line and expandable details section */}
     <AnimatePresence>

@@ -4,30 +4,17 @@ import GradientText from './ui/GradientText';
 const Contact = () => {
   return (
     <section id="contact" className="h-screen bg-black transition-colors duration-300 relative flex flex-col overflow-hidden" style={{scrollMarginTop: '4rem'}}>
-      {/* Split Background - Left Hand */}
-      <div className="absolute inset-y-0 left-0 w-[45%] z-10 pointer-events-none">
+      {/* Background Image */}
+      <div className="absolute inset-0 z-10 pointer-events-none">
         <div 
-          className="absolute inset-0 bg-contain bg-left bg-no-repeat"
+          className="absolute inset-0 bg-center bg-no-repeat"
           style={{ 
-            backgroundImage: 'url(/img/contact-bg.jpg)',
-            backgroundPosition: '0% center',
-            backgroundSize: 'auto 100%'
+            backgroundImage: 'url(https://cdn.prod.website-files.com/672e948e890dd8b9cc4d58dc/674132fbca99e012bda8855f_lkl9.webp)',
+            backgroundPosition: 'center',
+            backgroundSize: '125%'
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-black" />
-      </div>
-
-      {/* Split Background - Right Hand */}
-      <div className="absolute inset-y-0 right-0 w-[45%] z-10 pointer-events-none">
-        <div 
-          className="absolute inset-0 bg-contain bg-right bg-no-repeat"
-          style={{ 
-            backgroundImage: 'url(/img/contact-bg.jpg)',
-            backgroundPosition: '100% center',
-            backgroundSize: 'auto 100%'
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-black" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-60" />
       </div>
       
       <div className="relative z-20 flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
@@ -206,9 +193,7 @@ const Contact = () => {
               </div>
             </div>
           </div>
-        </motion.div>
-        
-        </div>
+        </motion.div>        </div>
       </div>
       
       {/* Footer at bottom of Contact section */}
