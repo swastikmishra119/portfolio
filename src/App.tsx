@@ -5,7 +5,10 @@ import Hero from './components/Hero'
 import About from './components/About'
 import WorkHistory from './components/WorkHistory'
 import Skills from './components/Skills'
+import BeyondCode from './components/BeyondCode'
 import Contact from './components/Contact'
+import NoiseTexture from './components/NoiseTexture'
+import BackToTop from './components/BackToTop'
 
 const App = memo(function App() {
   const [showContent, setShowContent] = useState(false)
@@ -40,6 +43,12 @@ const App = memo(function App() {
 
   return (
     <LazyMotion features={domAnimation}>
+      {/* Noise Texture Overlay */}
+      <NoiseTexture />
+      
+      {/* Back to Top Button */}
+      <BackToTop />
+      
       {/* Fixed Header - Animated slide-in with persistent fixed positioning */}
       <motion.div 
         style={{
@@ -73,6 +82,7 @@ const App = memo(function App() {
             <About />
             <WorkHistory />
             <Skills />
+            <BeyondCode />
             <Contact />
           </motion.div>
         </main>

@@ -25,6 +25,7 @@ const Header = () => {
     { name: 'About', href: '#about' },
     { name: 'Experience', href: '#work-history' },
     { name: 'Tech', href: '#skills' },
+    { name: 'Beyond Code', href: '#beyond-code' },
     { name: 'Contact', href: '#contact' },
   ]
 

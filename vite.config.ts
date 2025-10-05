@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     react({
       // Babel optimizations for better performance
@@ -14,7 +14,7 @@ export default defineConfig({
       }
     })
   ],
-  base: '/portfolio/',
+  base: mode === 'production' ? '/portfolio/' : '/',
   server: {
     port: 3000,
     open: true,
@@ -78,4 +78,4 @@ export default defineConfig({
     // Remove debugger statements in production
     drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : []
   }
-})
+}))
