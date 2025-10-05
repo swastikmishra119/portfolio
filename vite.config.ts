@@ -1,5 +1,17 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { writeFileSync } from 'fs'
+import { resolve } from 'path'
+
+// Plugin to create .nojekyll file after build
+const createNoJekyll = () => ({
+  name: 'create-nojekyll',
+  closeBundle() {
+    const outDir = resolve(__dirname, 'dist')
+    writeFileSync(resolve(outDir, '.nojekyll'), '')
+    console.log('\n✓ Created .nojekyll file')
+  }
+})
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -12,7 +24,8 @@ export default defineConfig(({ mode }) => ({
           ...(process.env.NODE_ENV === 'production' ? [] : [])
         ]
       }
-    })
+    }),
+    createNoJekyll()
   ],
   base: mode === 'production' ? '/portfolio/' : '/',
   server: {
