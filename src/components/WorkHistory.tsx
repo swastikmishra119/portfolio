@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react'
-import { motion } from 'motion/react'
+import { motion, AnimatePresence } from 'motion/react'
 import { GraduationCap, Briefcase, Building, Users } from "lucide-react";
 import { GlowingEffect } from "./ui/glowing-effect";
 import GradientText from './ui/GradientText';
@@ -9,6 +9,7 @@ import GlareHover from './ui/GlareHover';
 
 const WorkHistory = () => {
   const [animateCards, setAnimateCards] = useState(false);
+  const [expandedCard, setExpandedCard] = useState<number | null>(null);
   
   const experiences = [
     {
@@ -22,7 +23,11 @@ const WorkHistory = () => {
       logoPath: "./img/UPES Logo.png",
       textPath: "./img/UPES Text.png",
       hasLogo: true,
-      hasText: true
+      hasText: true,
+      details: [
+        "B.Tech in Computer Science Engineering",
+        "Specialized in Cloud Computing & Virtualization Technologies"
+      ]
     },
     {
       id: 2,
@@ -35,7 +40,12 @@ const WorkHistory = () => {
       logoPath: "./img/To The New Logo.png",
       textPath: "./img/To The New Text.png",
       hasLogo: true,
-      hasText: true
+      hasText: true,
+      details: [
+        "Automated CI/CD pipelines and managed AWS infrastructure as part of CloudKeeper",
+        "Developed internal tooling in Python and Java to optimize DevOps workflows",
+        "Supported cloud cost optimization and infrastructure monitoring"
+      ]
     },
     {
       id: 3,
@@ -47,7 +57,12 @@ const WorkHistory = () => {
       icon: <Building className="h-6 w-6 text-green-400" />,
       textPath: "./img/Samsung.png",
       hasLogo: false,
-      hasText: true
+      hasText: true,
+      details: [
+        "Enhanced user experience in Android's Audio Framework at the OS level",
+        "Contributed to system components using C++, Java, and Kotlin",
+        "Delivered media improvements across Galaxy devices as part of Core OS"
+      ]
     },
     {
       id: 4,
@@ -60,7 +75,12 @@ const WorkHistory = () => {
       logoPath: "./img/Microsoft Logo.png",
       textPath: "./img/Microsoft Text.png",
       hasLogo: true,
-      hasText: true
+      hasText: true,
+      details: [
+        "Built and maintained payment and subscription features on accounts.microsoft.com",
+        "Worked across React (frontend) and C# (backend) in the Devices & Subscriptions vertical",
+        "Improved reliability and scalability for millions of Microsoft account users"
+      ]
     }
   ];
 
@@ -147,13 +167,23 @@ const WorkHistory = () => {
                 {index % 2 === 0 ? (
                   <div className="flex justify-end pr-8 w-1/2">
                     <div className="w-full max-w-md">
-                      <ExperienceCard experience={experience} />
+                      <ExperienceCard 
+                        experience={experience} 
+                        isExpanded={expandedCard === experience.id}
+                        onToggle={() => setExpandedCard(expandedCard === experience.id ? null : experience.id)}
+                        expandDirection="down"
+                      />
                     </div>
                   </div>
                 ) : (
                   <div className="flex justify-start pl-8 w-1/2 ml-auto">
                     <div className="w-full max-w-md">
-                      <ExperienceCard experience={experience} />
+                      <ExperienceCard 
+                        experience={experience}
+                        isExpanded={expandedCard === experience.id}
+                        onToggle={() => setExpandedCard(expandedCard === experience.id ? null : experience.id)}
+                        expandDirection="up"
+                      />
                     </div>
                   </div>
                 )}
@@ -185,22 +215,32 @@ interface ExperienceCardProps {
     textPath?: string;
     hasLogo: boolean;
     hasText: boolean;
+    details: string[];
   };
+  isExpanded: boolean;
+  onToggle: () => void;
+  expandDirection: 'up' | 'down';
 }
 
-const ExperienceCard = ({ experience }: ExperienceCardProps) => {
+const ExperienceCard = ({ experience, isExpanded, onToggle, expandDirection }: ExperienceCardProps) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
-    <motion.div 
-      className="relative w-full h-[180px]"
-      whileHover={{ 
-        y: -6, 
-        scale: 1.02,
-        transition: { 
-          duration: 0.3, 
-          ease: "easeOut"
-        } 
-      }}
-    >
+    <div className="relative">
+      <motion.div 
+        className="relative w-full h-[180px] cursor-pointer"
+        whileHover={{ 
+          y: -6, 
+          scale: 1.02,
+          transition: { 
+            duration: 0.3, 
+            ease: "easeOut"
+          } 
+        }}
+        onClick={onToggle}
+        onHoverStart={() => setIsHovered(true)}
+        onHoverEnd={() => setIsHovered(false)}
+      >
       <GlareHover
         width="100%"
         height="100%"
@@ -276,10 +316,89 @@ const ExperienceCard = ({ experience }: ExperienceCardProps) => {
                 </div>
               </div>
             </div>
+            
+            {/* Hover hint */}
+            <AnimatePresence>
+              {isHovered && !isExpanded && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute bottom-2 right-2 text-[10px] uppercase tracking-wider text-gray-600 font-bold"
+                >
+                  Click for more info
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </GlareHover>
     </motion.div>
+
+    {/* Connecting line and expandable details section */}
+    <AnimatePresence>
+      {isExpanded && (
+        <>
+          {/* Vertical connecting line */}
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: '1rem', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className={`absolute left-1/2 transform -translate-x-1/2 w-0.5 bg-purple-500 z-10 ${
+              expandDirection === 'up' ? 'bottom-full' : 'top-full'
+            }`}
+            style={{
+              boxShadow: '0 0 8px rgba(168, 85, 247, 0.5)'
+            }}
+          />
+          
+          <motion.div
+            initial={{ 
+              opacity: 0, 
+              height: 0,
+              y: expandDirection === 'down' ? -20 : 20
+            }}
+            animate={{ 
+              opacity: 1, 
+              height: 'auto',
+              y: 0
+            }}
+            exit={{ 
+              opacity: 0, 
+              height: 0,
+              y: expandDirection === 'down' ? -20 : 20
+            }}
+            transition={{ 
+              duration: 0.3, 
+              ease: [0.25, 0.46, 0.45, 0.94]
+            }}
+            className={`absolute left-0 right-0 z-10 ${expandDirection === 'up' ? 'bottom-full mb-4' : 'top-full mt-4'}`}
+          >
+            <div className="rounded-2xl border-2 border-dark-border p-2 md:rounded-3xl md:p-3 transition-colors duration-300 backdrop-blur-sm bg-dark-surface/95">
+              <div className="rounded-xl px-4 py-3 md:px-5 md:py-4 bg-dark-surface/50">
+                <ul className="space-y-3">
+                  {experience.details.map((detail, idx) => (
+                    <motion.li
+                      key={idx}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="flex items-start gap-3 text-dark-text-secondary text-xs md:text-sm"
+                    >
+                      <span className="text-secondary-400 mt-1 flex-shrink-0">•</span>
+                      <span className="leading-relaxed">{detail}</span>
+                    </motion.li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  </div>
   );
 };
 
