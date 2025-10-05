@@ -31,13 +31,14 @@ const BeyondCode = () => {
   return (
     <section 
       id="beyond-code" 
-      className="min-h-screen bg-dark-bg transition-colors duration-300 relative flex items-center justify-center py-20"
+      className="min-h-screen bg-dark-bg transition-colors duration-300 relative"
       style={{scrollMarginTop: '4rem'}}
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+      <div className="absolute flex items-start justify-center px-4 sm:px-6 lg:px-8" style={{top: '50%', left: '0', right: '0', transform: 'translateY(-50%)'}}>
+        <div className="max-w-4xl w-full text-center">
         {/* Section Title */}
         <motion.h2 
-          className="text-3xl sm:text-4xl md:text-5xl font-black mb-6 text-center"
+          className="text-3xl sm:text-4xl md:text-5xl font-black mb-6 text-center overflow-visible"
           initial={{ opacity: 0, y: 40, scale: 0.95 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ 
@@ -150,6 +151,7 @@ const BeyondCode = () => {
             </motion.div>
           ))}
         </motion.div>
+        </div>
       </div>
     </section>
   )

@@ -41,7 +41,7 @@ const Skills = () => {
   ];
 
   return (
-    <section id="skills" className="relative min-h-screen w-full bg-dark-bg text-dark-text transition-colors duration-300 overflow-hidden">
+    <section id="skills" className="relative min-h-screen w-full bg-dark-bg text-dark-text transition-colors duration-300 overflow-hidden" style={{scrollMarginTop: '4rem'}}>
       <div className="absolute flex items-start justify-center px-4 sm:px-6 lg:px-8 z-10" style={{top: '40%', left: '0', right: '0', transform: 'translateY(-50%)'}}>
         <div className="max-w-6xl w-full text-center">
         <motion.h2 

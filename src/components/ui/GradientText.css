@@ -61,4 +61,5 @@
   animation: gradient linear infinite;
   will-change: background-position;
   transform: translateZ(0); /* Force hardware acceleration */
+  padding-bottom: 0.15rem;
 }
