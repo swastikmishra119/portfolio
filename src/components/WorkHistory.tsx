@@ -141,58 +141,64 @@ const WorkHistory = () => {
         >
           {/* Timeline line */}
           <div 
-            className="absolute left-1/2 transform -translate-x-1/2 w-0.5 opacity-40"
+            className="absolute left-1/2 transform -translate-x-1/2 w-0.5 opacity-40 pointer-events-none"
             style={{
               top: '0',
               bottom: '0',
-              zIndex: 0,
+              zIndex: 15,
               background: 'linear-gradient(to bottom, transparent 0%, transparent 7%, #a855f7 17%, #3b82f6 45%, #10b981 70%, #f59e0b 83%, transparent 93%, transparent 100%)'
             }}
           />
           
           <div className="space-y-12">
             {experiences.slice().reverse().map((experience, index) => (
-              <motion.div
-                key={experience.id}
-                className="relative flex items-center"
-                initial={{ opacity: 0, y: 60, scale: 0.95 }}
-                animate={animateCards ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 60, scale: 0.95 }}
-                transition={{ 
-                  duration: 0.8, 
-                  ease: [0.25, 0.46, 0.45, 0.94], 
-                  delay: index * 0.4
-                }}
-              >
-                {/* Experience Card positioned completely left or right */}
-                {index % 2 === 0 ? (
-                  <div className="flex justify-end pr-8 w-1/2">
-                    <div className="w-full max-w-md">
-                      <ExperienceCard 
-                        experience={experience} 
-                        isExpanded={expandedCard === experience.id}
-                        onToggle={() => setExpandedCard(expandedCard === experience.id ? null : experience.id)}
-                        expandDirection="down"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex justify-start pl-8 w-1/2 ml-auto">
-                    <div className="w-full max-w-md">
-                      <ExperienceCard 
-                        experience={experience}
-                        isExpanded={expandedCard === experience.id}
-                        onToggle={() => setExpandedCard(expandedCard === experience.id ? null : experience.id)}
-                        expandDirection="up"
-                      />
-                    </div>
-                  </div>
-                )}
-                
-                {/* Timeline Dot at center */}
+              <div key={experience.id} className="relative flex items-center" style={{ height: '180px', minHeight: '180px' }}>
+                {/* Timeline Dot at center - completely static with fixed positioning */}
                 <div 
-                  className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 top-1/2 w-4 h-4 bg-purple-500 rounded-full border-4 border-dark-bg shadow-lg z-10 transition-colors duration-300"
+                  className="absolute left-1/2 w-4 h-4 bg-purple-500 rounded-full border-4 border-dark-bg shadow-lg pointer-events-none transition-colors duration-300"
+                  style={{ 
+                    zIndex: 20,
+                    top: '90px',
+                    marginLeft: '-8px'
+                  }}
                 />
-              </motion.div>
+                
+                <motion.div
+                  className="relative flex items-center w-full"
+                  initial={{ opacity: 0, y: 60, scale: 0.95 }}
+                  animate={animateCards ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 60, scale: 0.95 }}
+                  transition={{ 
+                    duration: 0.8, 
+                    ease: [0.25, 0.46, 0.45, 0.94], 
+                    delay: index * 0.4
+                  }}
+                >
+                  {/* Experience Card positioned completely left or right */}
+                  {index % 2 === 0 ? (
+                    <div className="flex justify-end pr-8 w-1/2">
+                      <div className="w-full max-w-md">
+                        <ExperienceCard 
+                          experience={experience} 
+                          isExpanded={expandedCard === experience.id}
+                          onToggle={() => setExpandedCard(expandedCard === experience.id ? null : experience.id)}
+                          expandDirection="down"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex justify-start pl-8 w-1/2 ml-auto">
+                      <div className="w-full max-w-md">
+                        <ExperienceCard 
+                          experience={experience}
+                          isExpanded={expandedCard === experience.id}
+                          onToggle={() => setExpandedCard(expandedCard === experience.id ? null : experience.id)}
+                          expandDirection="up"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              </div>
             ))}
           </div>
         </motion.div>
@@ -229,13 +235,17 @@ const ExperienceCard = ({ experience, isExpanded, onToggle, expandDirection }: E
     <div className="relative">
       <motion.div 
         className="relative w-full h-[180px] cursor-pointer"
+        animate={{ 
+          y: 0, 
+          scale: 1
+        }}
         whileHover={{ 
           y: -6, 
-          scale: 1.02,
-          transition: { 
-            duration: 0.3, 
-            ease: "easeOut"
-          } 
+          scale: 1.02
+        }}
+        transition={{ 
+          duration: 0.3, 
+          ease: [0.25, 0.46, 0.45, 0.94]
         }}
         onClick={onToggle}
         onHoverStart={() => setIsHovered(true)}
@@ -323,15 +333,16 @@ const ExperienceCard = ({ experience, isExpanded, onToggle, expandDirection }: E
       </GlareHover>
     </motion.div>
 
-    {/* Click for more info text - below the card */}
+    {/* Click for more info text - below the card with absolute positioning */}
     <AnimatePresence>
       {isHovered && !isExpanded && (
         <motion.div
-          initial={{ opacity: 0, y: -5 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -5 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="flex justify-center mt-2 text-xs text-gray-500 font-medium uppercase tracking-wide"
+          className="absolute left-0 right-0 flex justify-center text-xs text-gray-500 font-medium uppercase tracking-wide pointer-events-none"
+          style={{ top: '190px' }}
         >
           Click for more info
         </motion.div>
