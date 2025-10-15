@@ -27,7 +27,7 @@ export default defineConfig(({ mode }) => ({
     }),
     createNoJekyll()
   ],
-  base: mode === 'production' ? '/portfolio/' : '/',
+  base: '/portfolio/',
   server: {
     port: 3000,
     open: true,
