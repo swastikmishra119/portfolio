@@ -22,11 +22,11 @@ const Contact = () => {
         <div className="max-w-4xl w-full text-center">
         <motion.h2 
           className="text-3xl sm:text-4xl md:text-5xl font-black mb-6"
-          initial={{ opacity: 0, y: 40, scale: 0.95 }}
+          initial={{ opacity: 0, y: 50, scale: 0.92 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ 
-            duration: 0.8, 
-            ease: [0.25, 0.46, 0.45, 0.94]
+            duration: 1.0, 
+            ease: [0.19, 1.0, 0.22, 1.0]
           }}
           viewport={{ once: true, amount: 0.3 }}
         >
@@ -43,9 +43,9 @@ const Contact = () => {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ 
-            duration: 0.7, 
-            ease: [0.25, 0.46, 0.45, 0.94], 
-            delay: 0.2
+            duration: 0.9, 
+            ease: [0.19, 1.0, 0.22, 1.0], 
+            delay: 0.15
           }}
           viewport={{ once: true, amount: 0.3 }}
         >
@@ -57,12 +57,12 @@ const Contact = () => {
         {/* Terminal Component with Resume Viewer */}
         <motion.div 
           className="flex justify-center px-4 sm:px-0"
-          initial={{ opacity: 0, y: 60, scale: 0.95 }}
+          initial={{ opacity: 0, y: 40, scale: 0.92 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ 
-            duration: 0.9, 
-            ease: [0.25, 0.46, 0.45, 0.94], 
-            delay: 0.4
+            duration: 1.0, 
+            ease: [0.19, 1.0, 0.22, 1.0], 
+            delay: 0.3
           }}
           viewport={{ once: true, amount: 0.3 }}
         >

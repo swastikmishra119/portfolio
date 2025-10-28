@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, memo } from 'react'
 import { motion, LazyMotion, domAnimation } from 'motion/react'
+import Lenis from 'lenis'
 import Header from './components/Header'
 import Hero from './components/Hero'
 import About from './components/About'
@@ -25,6 +26,26 @@ const App = memo(function App() {
     // Ensure page always starts from the top on load/reload
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     
+    // Initialize Lenis smooth scrolling
+    const lenis = new Lenis({
+      duration: 1.5,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 0.8,
+      touchMultiplier: 1.5,
+      infinite: false,
+      syncTouch: true,
+    })
+
+    // Request Animation Frame loop for Lenis with time tracking
+    let rafId: number
+    function raf(time: number) {
+      lenis.raf(time)
+      rafId = requestAnimationFrame(raf)
+    }
+    rafId = requestAnimationFrame(raf)
+    
     // Show content with background veil
     const contentTimer = setTimeout(() => {
       setShowContent(true)
@@ -38,6 +59,8 @@ const App = memo(function App() {
     return () => {
       clearTimeout(contentTimer)
       clearTimeout(headerTimer)
+      cancelAnimationFrame(rafId)
+      lenis.destroy()
     }
   }, [])
 
