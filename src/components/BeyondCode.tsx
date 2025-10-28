@@ -1,5 +1,5 @@
-import { motion } from 'motion/react'
-import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { useState, memo } from 'react'
 import GradientText from './ui/GradientText'
 import GlareHover from './ui/GlareHover'
 import { GlowingEffect } from './ui/glowing-effect'
@@ -25,7 +25,7 @@ const tracks = [
   }
 ]
 
-const BeyondCode = () => {
+const BeyondCode = memo(() => {
   const [animateCards, setAnimateCards] = useState(false);
 
   return (
@@ -141,6 +141,7 @@ const BeyondCode = () => {
                           allow="autoplay"
                           src={track.embedUrl}
                           title={track.title}
+                          loading="lazy"
                           className="rounded-lg"
                         />
                       </div>
@@ -155,6 +156,7 @@ const BeyondCode = () => {
       </div>
     </section>
   )
-}
+});
+BeyondCode.displayName = 'BeyondCode';
 
-export default BeyondCode
+export default BeyondCode;

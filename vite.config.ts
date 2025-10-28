@@ -57,7 +57,7 @@ export default defineConfig(({ mode }) => ({
           // Separate vendor chunk for better caching
           vendor: ['react', 'react-dom'],
           // Separate motion library for lazy loading
-          motion: ['motion/react', 'framer-motion'],
+          motion: ['framer-motion'],
           // Separate WebGL libraries
           webgl: ['ogl']
         },
@@ -77,7 +77,6 @@ export default defineConfig(({ mode }) => ({
     include: [
       'react', 
       'react-dom', 
-      'motion/react', 
       'framer-motion',
       'ogl',
       'clsx',

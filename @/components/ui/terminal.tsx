@@ -7,9 +7,9 @@ import {
   useRef,
   useState,
 } from "react"
-import { motion, MotionProps, useInView } from "motion/react"
+import { motion, MotionProps, useInView } from "framer-motion"
 
-import { cn } from "@/lib/utils"
+import { cn } from "../../../src/lib/utils"
 
 interface SequenceContextValue {
   completeItem: (index: number) => void

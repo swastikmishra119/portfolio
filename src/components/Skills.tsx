@@ -1,8 +1,9 @@
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { GlowingEffect } from './ui/glowing-effect';
 import GradientText from './ui/GradientText';
+import { memo } from 'react';
 
-const Skills = () => {
+const Skills = memo(() => {
   const skillCategories = [
     {
       title: 'Frontend',
@@ -127,8 +128,8 @@ const Skills = () => {
       </div>
     </section>
   );
-};
-
+});
+Skills.displayName = 'Skills';
 interface SkillCardProps {
   category: {
     title: string;
@@ -137,7 +138,7 @@ interface SkillCardProps {
   index: number;
 }
 
-const SkillCard = ({ category, index }: SkillCardProps) => {
+const SkillCard = memo(({ category, index }: SkillCardProps) => {
   return (
     <motion.div 
       className="relative h-full min-h-[300px]"
@@ -196,6 +197,7 @@ const SkillCard = ({ category, index }: SkillCardProps) => {
                     <img 
                       src={skill.logo} 
                       alt={skill.name}
+                      loading="lazy"
                       className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 transition-transform duration-200 group-hover:scale-110"
                     />
                     <span 
@@ -212,6 +214,7 @@ const SkillCard = ({ category, index }: SkillCardProps) => {
       </div>
     </motion.div>
   );
-};
+});
+SkillCard.displayName = 'SkillCard';
 
 export default Skills;

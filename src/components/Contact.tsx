@@ -1,7 +1,8 @@
-import { motion } from 'motion/react'
+import { motion } from 'framer-motion';
+import { memo } from 'react';
 import GradientText from './ui/GradientText';
 
-const Contact = () => {
+const Contact = memo(() => {
   return (
     <section id="contact" className="h-screen bg-black transition-colors duration-300 relative flex flex-col overflow-hidden" style={{scrollMarginTop: '4rem'}}>
       {/* Background Image */}
@@ -189,6 +190,7 @@ const Contact = () => {
                     className="border-0"
                     title="Swastik's Resume"
                     allow="autoplay"
+                    loading="lazy"
                   />
                 </motion.div>
               </div>
@@ -249,7 +251,9 @@ const Contact = () => {
         </motion.p>
       </motion.div>
     </section>
-  )
-}
+  );
+});
 
-export default Contact
+Contact.displayName = 'Contact';
+
+export default Contact;

@@ -1,6 +1,6 @@
 import DarkVeil from './DarkVeil';
 import { useState, useEffect, useCallback, useMemo, memo } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 
 const Hero = memo(() => {
   const [isVisible, setIsVisible] = useState(true);
@@ -29,19 +29,6 @@ const Hero = memo(() => {
   }), []);
 
   useEffect(() => {
-    let ticking = false;
-    
-    // Optimized scroll handler with requestAnimationFrame
-    const optimizedHandleScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          handleScroll();
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
     // Animation sequence - synchronized with App content timing
     const timer2 = setTimeout(() => {
       setBackgroundVisible(true);
@@ -52,10 +39,10 @@ const Hero = memo(() => {
       setScrollIndicatorVisible(true);
     }, 4800); // 4.8s - after header slides in (4s + 0.6s animation + 0.2s buffer)
 
-    window.addEventListener('scroll', optimizedHandleScroll, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
     
     return () => {
-      window.removeEventListener('scroll', optimizedHandleScroll);
+      window.removeEventListener('scroll', handleScroll);
       clearTimeout(timer2);
       clearTimeout(timer3);
     };

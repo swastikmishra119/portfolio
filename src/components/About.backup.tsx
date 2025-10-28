@@ -1,4 +1,4 @@
-import { motion } from 'motion/react'
+import { motion } from 'framer-motion'
 import GradientText from './ui/GradientText'
 import { GlowingEffect } from './ui/glowing-effect'
 import { Tilt } from '../../components/motion-primitives/tilt'

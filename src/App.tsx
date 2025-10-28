@@ -1,15 +1,16 @@
-import { useState, useEffect, useMemo, memo } from 'react'
-import { motion, LazyMotion, domAnimation } from 'motion/react'
+import { useState, useEffect, useMemo, memo, lazy, Suspense, useCallback } from 'react'
+import { motion, LazyMotion, domAnimation } from 'framer-motion'
 import Lenis from 'lenis'
 import Header from './components/Header'
 import Hero from './components/Hero'
-import About from './components/About'
-import WorkHistory from './components/WorkHistory'
-import Skills from './components/Skills'
-import BeyondCode from './components/BeyondCode'
-import Contact from './components/Contact'
 import NoiseTexture from './components/NoiseTexture'
 import BackToTop from './components/BackToTop'
+
+const About = lazy(() => import('./components/About'))
+const WorkHistory = lazy(() => import('./components/WorkHistory'))
+const Skills = lazy(() => import('./components/Skills'))
+const BeyondCode = lazy(() => import('./components/BeyondCode'))
+const Contact = lazy(() => import('./components/Contact'))
 
 const App = memo(function App() {
   const [showContent, setShowContent] = useState(false)
@@ -21,6 +22,11 @@ const App = memo(function App() {
     contentTransition: { duration: 0.8, ease: "easeOut" as const },
     headerSlideTransition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const }
   }), []);
+
+  const raf = useCallback((lenis: Lenis) => (time: number) => {
+    lenis.raf(time)
+    requestAnimationFrame(raf(lenis))
+  }, [])
 
   useEffect(() => {
     // Ensure page always starts from the top on load/reload
@@ -39,12 +45,7 @@ const App = memo(function App() {
     })
 
     // Request Animation Frame loop for Lenis with time tracking
-    let rafId: number
-    function raf(time: number) {
-      lenis.raf(time)
-      rafId = requestAnimationFrame(raf)
-    }
-    rafId = requestAnimationFrame(raf)
+    const rafId = requestAnimationFrame(raf(lenis))
     
     // Show content with background veil
     const contentTimer = setTimeout(() => {
@@ -62,7 +63,7 @@ const App = memo(function App() {
       cancelAnimationFrame(rafId)
       lenis.destroy()
     }
-  }, [])
+  }, [raf])
 
   return (
     <LazyMotion features={domAnimation}>
@@ -102,11 +103,13 @@ const App = memo(function App() {
             animate={{ opacity: showContent ? 1 : 0 }}
             transition={motionVariants.contentTransition}
           >
-            <About />
-            <WorkHistory />
-            <Skills />
-            <BeyondCode />
-            <Contact />
+            <Suspense fallback={<div className="h-screen"></div>}>
+              <About />
+              <WorkHistory />
+              <Skills />
+              <BeyondCode />
+              <Contact />
+            </Suspense>
           </motion.div>
         </main>
       </div>

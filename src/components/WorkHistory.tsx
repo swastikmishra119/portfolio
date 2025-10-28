@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { useState, memo } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { GraduationCap, Briefcase, Building, Users } from "lucide-react";
 import { GlowingEffect } from "./ui/glowing-effect";
 import GradientText from './ui/GradientText';
 import GlareHover from './ui/GlareHover';
 
-const WorkHistory = () => {
+const WorkHistory = memo(() => {
   const [animateCards, setAnimateCards] = useState(false);
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
   
@@ -178,7 +178,7 @@ const WorkHistory = () => {
                     <div className="flex justify-end pr-8 w-1/2">
                       <div className="w-full max-w-md">
                         <ExperienceCard 
-                          experience={experience} 
+                          {...experience}
                           isExpanded={expandedCard === experience.id}
                           onToggle={() => setExpandedCard(expandedCard === experience.id ? null : experience.id)}
                           expandDirection="down"
@@ -189,7 +189,7 @@ const WorkHistory = () => {
                     <div className="flex justify-start pl-8 w-1/2 ml-auto">
                       <div className="w-full max-w-md">
                         <ExperienceCard 
-                          experience={experience}
+                          {...experience}
                           isExpanded={expandedCard === experience.id}
                           onToggle={() => setExpandedCard(expandedCard === experience.id ? null : experience.id)}
                           expandDirection="up"
@@ -206,29 +206,40 @@ const WorkHistory = () => {
       </div>
     </section>
   );
-}
-
+});
+WorkHistory.displayName = 'WorkHistory';
 interface ExperienceCardProps {
-  experience: {
-    id: number;
-    type: string;
-    title: string;
-    subtitle: string;
-    description: string;
-    dateRange: string;
-    icon: React.ReactNode;
-    logoPath?: string;
-    textPath?: string;
-    hasLogo: boolean;
-    hasText: boolean;
-    details: string[];
-  };
+  id: number;
+  type: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  dateRange: string;
+  icon: React.ReactNode;
+  logoPath?: string;
+  textPath?: string;
+  hasLogo: boolean;
+  hasText: boolean;
+  details: string[];
   isExpanded: boolean;
   onToggle: () => void;
   expandDirection: 'up' | 'down';
 }
 
-const ExperienceCard = ({ experience, isExpanded, onToggle, expandDirection }: ExperienceCardProps) => {
+const ExperienceCard = memo(({
+  title,
+  subtitle,
+  description,
+  dateRange,
+  logoPath,
+  textPath,
+  hasLogo,
+  hasText,
+  details,
+  isExpanded, 
+  onToggle, 
+  expandDirection 
+}: ExperienceCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -278,32 +289,34 @@ const ExperienceCard = ({ experience, isExpanded, onToggle, expandDirection }: E
             <div className="relative flex flex-1 gap-6">
               {/* Logo column - left side */}
               <div className="flex-1 flex items-center justify-center">
-                {(experience.hasLogo || experience.hasText) && (
+                {(hasLogo || hasText) && (
                   <div className="flex items-center gap-2 h-12 md:h-14">
-                    {experience.hasLogo && experience.logoPath && (
+                    {hasLogo && logoPath && (
                       <img 
-                        src={experience.logoPath} 
-                        alt={`${experience.title} Logo`}
+                        src={logoPath} 
+                        alt={`${title} Logo`}
+                        loading="lazy"
                         className={`object-contain transition-all duration-300 ${
-                          experience.title === "To The New" 
+                          title === "To The New" 
                             ? "w-10 h-10 md:w-12 md:h-12" 
                             : "w-8 h-8"
                         }`}
                       />
                     )}
-                    {experience.hasText && experience.textPath && (
+                    {hasText && textPath && (
                       <img 
-                        src={experience.textPath} 
-                        alt={`${experience.title} Text`}
+                        src={textPath} 
+                        alt={`${title} Text`}
+                        loading="lazy"
                         className={`object-contain transition-all duration-300 ${
-                          experience.title === "To The New" 
+                          title === "To The New" 
                             ? "h-10 md:h-12" 
-                            : experience.title === "Samsung"
+                            : title === "Samsung"
                             ? "h-5 md:h-6"
                             : "h-8"
                         }`}
                         style={{
-                          filter: experience.title === "UPES" 
+                          filter: title === "UPES" 
                             ? 'invert(1) brightness(2) contrast(2)'
                             : 'var(--logo-filter, none)'
                         }}
@@ -316,13 +329,13 @@ const ExperienceCard = ({ experience, isExpanded, onToggle, expandDirection }: E
               {/* Content column - right side */}
               <div className="flex-1 flex flex-col justify-center space-y-2">
                 <h4 className="font-sans text-sm font-bold text-secondary-400 md:text-base leading-tight">
-                  {experience.subtitle}
+                  {subtitle}
                 </h4>
                 <p className="font-sans text-xs text-dark-text-secondary md:text-sm leading-relaxed transition-colors duration-300">
-                  {experience.description}
+                  {description}
                 </p>
                 <div className="px-3 py-1 bg-secondary-500/20 text-secondary-300 rounded-md text-xs font-medium w-fit">
-                  {experience.dateRange}
+                  {dateRange}
                 </div>
               </div>
             </div>
@@ -392,7 +405,7 @@ const ExperienceCard = ({ experience, isExpanded, onToggle, expandDirection }: E
             <div className="rounded-2xl border-2 border-dark-border p-2 md:rounded-3xl md:p-3 transition-colors duration-300 backdrop-blur-sm bg-dark-surface/95">
               <div className="rounded-xl px-4 py-3 md:px-5 md:py-4 bg-dark-surface/50">
                 <ul className="space-y-3">
-                  {experience.details.map((detail, idx) => (
+                  {details.map((detail, idx) => (
                     <motion.li
                       key={idx}
                       initial={{ opacity: 0, x: -20 }}
@@ -413,6 +426,7 @@ const ExperienceCard = ({ experience, isExpanded, onToggle, expandDirection }: E
     </AnimatePresence>
   </div>
   );
-};
+});
+ExperienceCard.displayName = 'ExperienceCard';
 
 export default WorkHistory;
