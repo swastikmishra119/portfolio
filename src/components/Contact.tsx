@@ -1,10 +1,103 @@
 import { motion } from 'framer-motion';
-import { memo } from 'react';
+import { memo, useState, useCallback } from 'react';
 import GradientText from './ui/GradientText';
 
 const Contact = memo(() => {
+  const [resumeLoaded, setResumeLoaded] = useState(false);
+
+  const triggerConfetti = useCallback((e: React.MouseEvent<HTMLHeadingElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const duration = 2500;
+    const startTime = performance.now();
+
+    function randomInRange(min: number, max: number) {
+      return Math.random() * (max - min) + min;
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.style.position = 'fixed';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.width = '100vw';
+    canvas.style.height = '100vh';
+    canvas.style.pointerEvents = 'none';
+    canvas.style.zIndex = '99999';
+    document.body.appendChild(canvas);
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const ctx = canvas.getContext('2d', { 
+      alpha: true,
+      desynchronized: true // Better performance
+    });
+    if (!ctx) return;
+
+    const colors = ['#a855f7', '#ec4899', '#3b82f6', '#10b981', '#f59e0b'];
+    
+    // Create 50 confetti pieces
+    const particles = Array.from({ length: 50 }, () => {
+      const angle = randomInRange(0, Math.PI * 2);
+      const velocity = randomInRange(8, 20);
+      return {
+        x: centerX,
+        y: centerY,
+        vx: Math.cos(angle) * velocity,
+        vy: Math.sin(angle) * velocity - 5,
+        rotation: randomInRange(0, Math.PI * 2),
+        rotationSpeed: randomInRange(-0.3, 0.3),
+        color: colors[Math.floor(Math.random() * colors.length)],
+        size: randomInRange(6, 10)
+      };
+    });
+
+    function animate() {
+      if (!ctx || !canvas) return;
+      
+      const elapsed = performance.now() - startTime;
+      
+      if (elapsed > duration) {
+        document.body.removeChild(canvas);
+        return;
+      }
+
+      const progress = elapsed / duration;
+      
+      // Clear with low overhead
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Batch render all particles
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.4; // gravity
+        p.rotation += p.rotationSpeed;
+
+        // Fade out in last 30%
+        const opacity = progress > 0.7 ? (1 - progress) / 0.3 : 1;
+
+        ctx.globalAlpha = opacity;
+        ctx.fillStyle = p.color;
+        
+        // Use translate + rotate for smooth rendering
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation);
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+        ctx.restore();
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+  }, []);
+
   return (
-    <section id="contact" className="h-screen bg-black transition-colors duration-300 relative flex flex-col overflow-hidden" style={{scrollMarginTop: '4rem'}}>
+    <section id="contact" className="min-h-screen bg-black transition-colors duration-300 relative flex flex-col overflow-hidden pb-12" style={{scrollMarginTop: '4rem'}}>
       {/* Background Image */}
       <div className="absolute inset-0 z-10 pointer-events-none">
         <div 
@@ -22,7 +115,7 @@ const Contact = memo(() => {
       <div className="relative z-20 flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl w-full text-center">
         <motion.h2 
-          className="text-3xl sm:text-4xl md:text-5xl font-black mb-6"
+          className="text-3xl sm:text-4xl md:text-5xl font-black mb-6 cursor-pointer select-none"
           initial={{ opacity: 0, y: 50, scale: 0.92 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ 
@@ -30,6 +123,8 @@ const Contact = memo(() => {
             ease: [0.19, 1.0, 0.22, 1.0]
           }}
           viewport={{ once: true, amount: 0.3 }}
+          onClick={triggerConfetti}
+          whileTap={{ scale: 0.98 }}
         >
           <GradientText
             animationSpeed={15}
@@ -183,15 +278,24 @@ const Contact = memo(() => {
                     transition: { duration: 0.3 }
                   }}
                 >
-                  <iframe
-                    src="https://drive.google.com/file/d/1tFUZdyPnPkIFZuYqbenISny19xMuwP1T/preview"
-                    width="100%"
-                    height="100%"
-                    className="border-0"
-                    title="Swastik's Resume"
-                    allow="autoplay"
-                    loading="lazy"
-                  />
+                  <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                    {!resumeLoaded && (
+                      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#fff', color: '#000' }}>
+                        <p>Loading Resume...</p>
+                      </div>
+                    )}
+                    <iframe
+                      src="https://drive.google.com/file/d/1tFUZdyPnPkIFZuYqbenISny19xMuwP1T/preview"
+                      width="100%"
+                      height="100%"
+                      className="border-0"
+                      title="Swastik's Resume"
+                      allow="autoplay"
+                      loading="lazy"
+                      onLoad={() => setResumeLoaded(true)}
+                      style={{ opacity: resumeLoaded ? 1 : 0, transition: 'opacity 0.5s ease-in-out' }}
+                    />
+                  </div>
                 </motion.div>
               </div>
             </div>
@@ -201,7 +305,7 @@ const Contact = memo(() => {
       
       {/* Footer at bottom of Contact section */}
       <motion.div 
-        className="absolute bottom-4 left-0 right-0 z-30 text-center"
+        className="relative z-30 text-center mt-8 pb-4"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ 

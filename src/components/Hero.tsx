@@ -1,11 +1,13 @@
 import DarkVeil from './DarkVeil';
-import { useState, useEffect, useCallback, useMemo, memo } from 'react';
+import { useState, useEffect, useCallback, useMemo, memo, useRef } from 'react';
 import { motion } from 'framer-motion';
+import VariableProximity from './ui/VariableProximity';
 
 const Hero = memo(() => {
   const [isVisible, setIsVisible] = useState(true);
   const [backgroundVisible, setBackgroundVisible] = useState(false);
   const [scrollIndicatorVisible, setScrollIndicatorVisible] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Optimized scroll handler with throttling
   const handleScroll = useCallback(() => {
@@ -78,9 +80,10 @@ const Hero = memo(() => {
       
       {/* Animated Text Content */}
       <div className="absolute inset-0 flex items-center justify-center z-10">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div ref={containerRef} className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center" style={{ position: 'relative' }}>
           <motion.div 
-            className="mb-6 sm:mb-8 animation-optimized motion-smooth"
+            className="mb-6 sm:mb-8"
+            style={{ willChange: 'transform, opacity' }}
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...motionVariants.textTransition, delay: 0.3 }}
@@ -88,12 +91,19 @@ const Hero = memo(() => {
             <h1 className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-semibold leading-tight transition-colors duration-500 ${
               backgroundVisible ? 'text-dark-text' : 'text-white'
             }`}>
-              Hi! I'm Swastik
+              <VariableProximity
+                label="Hi! I'm Swastik"
+                fromFontVariationSettings="'wght' 400, 'opsz' 9"
+                toFontVariationSettings="'wght' 1000, 'opsz' 40"
+                containerRef={containerRef}
+                radius={50}
+                falloff="linear"
+              />
             </h1>
           </motion.div>
 
           <motion.div
-            className="animation-optimized motion-smooth"
+            style={{ willChange: 'transform, opacity' }}
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...motionVariants.textTransition, delay: 2 }}
@@ -101,7 +111,14 @@ const Hero = memo(() => {
             <p className={`text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed transition-colors duration-700 ${
               backgroundVisible ? 'text-dark-text-secondary' : 'text-gray-300'
             }`}>
-              Good to see you here! Welcome to my portfolio
+              <VariableProximity
+                label="Good to see you here! Welcome to my portfolio"
+                fromFontVariationSettings="'wght' 400, 'opsz' 9"
+                toFontVariationSettings="'wght' 1000, 'opsz' 40"
+                containerRef={containerRef}
+                radius={50}
+                falloff="linear"
+              />
             </p>
           </motion.div>
         </div>

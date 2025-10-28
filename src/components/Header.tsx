@@ -54,7 +54,14 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo - pushed more to the left */}
           <div className="flex-shrink-0">
-            <a href="#hero" className="text-xl font-bold text-dark-text hover:text-dark-text transition-colors duration-200">
+            <a 
+              href="#" 
+              onClick={(e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="text-xl font-bold text-dark-text hover:text-dark-text transition-colors duration-200 cursor-pointer"
+            >
               Swastik Mishra
             </a>
           </div>
