@@ -177,7 +177,11 @@ const DarkVeil = memo(function DarkVeil({
       const w = parent.clientWidth,
         h = parent.clientHeight;
       renderer.setSize(w * resolutionScale, h * resolutionScale);
-      program.uniforms.uResolution.value.set(w, h);
+      if (renderer.gl.canvas) {
+        renderer.gl.canvas.style.width = '100%';
+        renderer.gl.canvas.style.height = '100%';
+      }
+      program.uniforms.uResolution.value.set(w * resolutionScale, h * resolutionScale);
     };
 
     window.addEventListener('resize', resize);

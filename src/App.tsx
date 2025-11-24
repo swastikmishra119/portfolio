@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, memo, lazy, Suspense, useCallback } from 'react'
+import { useState, useEffect, useMemo, memo, lazy, Suspense } from 'react'
 import { motion, LazyMotion, domAnimation } from 'framer-motion'
 import Lenis from 'lenis'
 import Header from './components/Header'
@@ -23,10 +23,7 @@ const App = memo(function App() {
     headerSlideTransition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const }
   }), []);
 
-  const raf = useCallback((lenis: Lenis) => (time: number) => {
-    lenis.raf(time)
-    requestAnimationFrame(raf(lenis))
-  }, [])
+  // Removed recursive raf callback creation
 
   useEffect(() => {
     // Ensure page always starts from the top on load/reload
@@ -45,7 +42,12 @@ const App = memo(function App() {
     })
 
     // Request Animation Frame loop for Lenis with time tracking
-    const rafId = requestAnimationFrame(raf(lenis))
+    let rafId: number;
+    const raf = (time: number) => {
+      lenis.raf(time)
+      rafId = requestAnimationFrame(raf)
+    }
+    rafId = requestAnimationFrame(raf)
     
     // Show content with background veil
     const contentTimer = setTimeout(() => {
@@ -63,7 +65,7 @@ const App = memo(function App() {
       cancelAnimationFrame(rafId)
       lenis.destroy()
     }
-  }, [raf])
+  }, [])
 
   return (
     <LazyMotion features={domAnimation}>

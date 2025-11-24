@@ -8,14 +8,19 @@ const Hero = memo(() => {
   const [backgroundVisible, setBackgroundVisible] = useState(false);
   const [scrollIndicatorVisible, setScrollIndicatorVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const ticking = useRef(false);
 
   // Optimized scroll handler with throttling
   const handleScroll = useCallback(() => {
-    const scrollY = window.scrollY;
-    const windowHeight = window.innerHeight;
-    
-    // Hide arrow when scrolled more than 20% of viewport height
-    setIsVisible(scrollY < windowHeight * 0.2);
+    if (!ticking.current) {
+      window.requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        const windowHeight = window.innerHeight;
+        setIsVisible(scrollY < windowHeight * 0.2);
+        ticking.current = false;
+      });
+      ticking.current = true;
+    }
   }, []);
 
   // Memoize motion variants for better performance
@@ -74,7 +79,7 @@ const Hero = memo(() => {
           speed={0.9}
           scanlineFrequency={0}
           warpAmount={0.1}
-          resolutionScale={1}
+          resolutionScale={0.5}
         />
       </motion.div>
       

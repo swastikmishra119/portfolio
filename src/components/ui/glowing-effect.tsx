@@ -32,6 +32,27 @@ const GlowingEffect = memo(
     const containerRef = useRef<HTMLDivElement>(null);
     const lastPosition = useRef({ x: 0, y: 0 });
     const animationFrameRef = useRef<number>(0);
+    const rectRef = useRef<{ top: number; left: number; width: number; height: number } | null>(null);
+
+    const updateRect = useCallback(() => {
+      if (!containerRef.current) return;
+      const r = containerRef.current.getBoundingClientRect();
+      rectRef.current = {
+        top: r.top + window.scrollY,
+        left: r.left + window.scrollX,
+        width: r.width,
+        height: r.height
+      };
+    }, []);
+
+    useEffect(() => {
+      updateRect();
+      window.addEventListener("resize", updateRect);
+      // Update rect on scroll too if layout shifts, but usually resize is enough for page coords
+      // However, if parent moves, we might need to update. 
+      // For now, resize is the main trigger for layout changes.
+      return () => window.removeEventListener("resize", updateRect);
+    }, [updateRect]);
 
     const handleMove = useCallback(
       (e?: MouseEvent | { x: number; y: number }) => {
@@ -45,7 +66,17 @@ const GlowingEffect = memo(
           const element = containerRef.current;
           if (!element) return;
 
-          const { left, top, width, height } = element.getBoundingClientRect();
+          // Use cached rect converted to viewport coordinates
+          if (!rectRef.current) updateRect();
+          if (!rectRef.current) return;
+
+          const scrollX = window.scrollX;
+          const scrollY = window.scrollY;
+          const left = rectRef.current.left - scrollX;
+          const top = rectRef.current.top - scrollY;
+          const width = rectRef.current.width;
+          const height = rectRef.current.height;
+
           const mouseX = e?.x ?? lastPosition.current.x;
           const mouseY = e?.y ?? lastPosition.current.y;
 
