@@ -1,8 +1,8 @@
 "use client";
 
-import { memo, useCallback, useEffect, useRef } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "../../lib/utils";
-import { animate } from "framer-motion";
+import { useSpring, useMotionValue, useMotionValueEvent } from "framer-motion";
 
 interface GlowingEffectProps {
   blur?: number;
@@ -16,6 +16,7 @@ interface GlowingEffectProps {
   movementDuration?: number;
   borderWidth?: number;
 }
+
 const GlowingEffect = memo(
   ({
     blur = 0,
@@ -25,14 +26,26 @@ const GlowingEffect = memo(
     variant = "default",
     glow = false,
     className,
-    movementDuration = 3, // Slower for better performance
     borderWidth = 1,
-    disabled = false, // Enable by default but optimize
+    disabled = false,
   }: GlowingEffectProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const lastPosition = useRef({ x: 0, y: 0 });
-    const animationFrameRef = useRef<number>(0);
     const rectRef = useRef<{ top: number; left: number; width: number; height: number } | null>(null);
+    const [isVisible, setIsVisible] = useState(false);
+
+    const angle = useMotionValue(0);
+    const smoothAngle = useSpring(angle, {
+      damping: 20,
+      stiffness: 100,
+      mass: 0.5
+    });
+
+    useMotionValueEvent(smoothAngle, "change", (latest) => {
+      if (containerRef.current) {
+        containerRef.current.style.setProperty("--start", String(latest));
+      }
+    });
 
     const updateRect = useCallback(() => {
       if (!containerRef.current) return;
@@ -46,93 +59,94 @@ const GlowingEffect = memo(
     }, []);
 
     useEffect(() => {
+      if (!containerRef.current) return;
+
+      const observer = new IntersectionObserver(([entry]) => {
+        setIsVisible(entry.isIntersecting);
+        if (entry.isIntersecting) {
+          updateRect();
+        }
+      }, { threshold: 0 });
+
+      observer.observe(containerRef.current);
+      return () => observer.disconnect();
+    }, [updateRect]);
+
+    useEffect(() => {
       updateRect();
       window.addEventListener("resize", updateRect);
-      // Update rect on scroll too if layout shifts, but usually resize is enough for page coords
-      // However, if parent moves, we might need to update. 
-      // For now, resize is the main trigger for layout changes.
       return () => window.removeEventListener("resize", updateRect);
     }, [updateRect]);
 
     const handleMove = useCallback(
       (e?: MouseEvent | { x: number; y: number }) => {
-        if (!containerRef.current) return;
+        if (!containerRef.current || !rectRef.current) return;
 
-        if (animationFrameRef.current) {
-          cancelAnimationFrame(animationFrameRef.current);
+        // If it's a real mouse event, update last position
+        if (e && 'clientX' in e) {
+          lastPosition.current = { x: e.clientX, y: e.clientY };
         }
 
-        animationFrameRef.current = requestAnimationFrame(() => {
-          const element = containerRef.current;
-          if (!element) return;
+        const mouseX = lastPosition.current.x;
+        const mouseY = lastPosition.current.y;
 
-          // Use cached rect converted to viewport coordinates
-          if (!rectRef.current) updateRect();
-          if (!rectRef.current) return;
+        const scrollX = window.scrollX;
+        const scrollY = window.scrollY;
+        const left = rectRef.current.left - scrollX;
+        const top = rectRef.current.top - scrollY;
+        const width = rectRef.current.width;
+        const height = rectRef.current.height;
 
-          const scrollX = window.scrollX;
-          const scrollY = window.scrollY;
-          const left = rectRef.current.left - scrollX;
-          const top = rectRef.current.top - scrollY;
-          const width = rectRef.current.width;
-          const height = rectRef.current.height;
+        const center = [left + width * 0.5, top + height * 0.5];
+        const distanceFromCenter = Math.hypot(
+          mouseX - center[0],
+          mouseY - center[1]
+        );
+        const inactiveRadius = 0.5 * Math.min(width, height) * inactiveZone;
 
-          const mouseX = e?.x ?? lastPosition.current.x;
-          const mouseY = e?.y ?? lastPosition.current.y;
+        if (distanceFromCenter < inactiveRadius) {
+          containerRef.current.style.setProperty("--active", "0");
+          return;
+        }
 
-          if (e) {
-            lastPosition.current = { x: mouseX, y: mouseY };
-          }
+        const isActive =
+          mouseX > left - proximity &&
+          mouseX < left + width + proximity &&
+          mouseY > top - proximity &&
+          mouseY < top + height + proximity;
 
-          const center = [left + width * 0.5, top + height * 0.5];
-          const distanceFromCenter = Math.hypot(
-            mouseX - center[0],
-            mouseY - center[1]
-          );
-          const inactiveRadius = 0.5 * Math.min(width, height) * inactiveZone;
+        containerRef.current.style.setProperty("--active", isActive ? "1" : "0");
 
-          if (distanceFromCenter < inactiveRadius) {
-            element.style.setProperty("--active", "0");
-            return;
-          }
+        if (!isActive) return;
 
-          const isActive =
-            mouseX > left - proximity &&
-            mouseX < left + width + proximity &&
-            mouseY > top - proximity &&
-            mouseY < top + height + proximity;
+        const currentAngle = smoothAngle.get();
+        let targetAngle =
+          (180 * Math.atan2(mouseY - center[1], mouseX - center[0])) /
+          Math.PI +
+          90;
 
-          element.style.setProperty("--active", isActive ? "1" : "0");
+        const angleDiff = ((targetAngle - currentAngle + 180) % 360) - 180;
+        const newAngle = currentAngle + angleDiff;
 
-          if (!isActive) return;
-
-          const currentAngle =
-            parseFloat(element.style.getPropertyValue("--start")) || 0;
-          let targetAngle =
-            (180 * Math.atan2(mouseY - center[1], mouseX - center[0])) /
-              Math.PI +
-            90;
-
-          const angleDiff = ((targetAngle - currentAngle + 180) % 360) - 180;
-          const newAngle = currentAngle + angleDiff;
-
-          animate(currentAngle, newAngle, {
-            duration: movementDuration,
-            ease: [0.16, 1, 0.3, 1],
-            onUpdate: (value) => {
-              element.style.setProperty("--start", String(value));
-            },
-          });
-        });
+        angle.set(newAngle);
       },
-      [inactiveZone, proximity, movementDuration]
+      [inactiveZone, proximity, angle, smoothAngle]
     );
 
     useEffect(() => {
-      if (disabled) return;
+      if (disabled || !isVisible) return;
 
-      const handleScroll = () => handleMove();
-      const handlePointerMove = (e: PointerEvent) => handleMove(e);
+      let rafId: number;
+
+      const handleScroll = () => {
+        cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => handleMove());
+      };
+
+      const handlePointerMove = (e: PointerEvent) => {
+        cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => handleMove(e));
+      };
 
       window.addEventListener("scroll", handleScroll, { passive: true });
       document.body.addEventListener("pointermove", handlePointerMove, {
@@ -140,13 +154,11 @@ const GlowingEffect = memo(
       });
 
       return () => {
-        if (animationFrameRef.current) {
-          cancelAnimationFrame(animationFrameRef.current);
-        }
+        cancelAnimationFrame(rafId);
         window.removeEventListener("scroll", handleScroll);
         document.body.removeEventListener("pointermove", handlePointerMove);
       };
-    }, [handleMove, disabled]);
+    }, [handleMove, disabled, isVisible]);
 
     return (
       <>
@@ -190,7 +202,7 @@ const GlowingEffect = memo(
             } as React.CSSProperties
           }
           className={cn(
-            "pointer-events-none absolute inset-0 rounded-[inherit] opacity-100 transition-opacity",
+            "pointer-events-none absolute inset-0 rounded-[inherit] opacity-100 transition-opacity will-change-transform",
             glow && "opacity-100",
             blur > 0 && "blur-[var(--blur)] ",
             className,
