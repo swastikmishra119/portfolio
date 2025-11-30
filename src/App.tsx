@@ -23,19 +23,17 @@ const App = memo(function App() {
     headerSlideTransition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const }
   }), []);
 
-  // Removed recursive raf callback creation
-
   useEffect(() => {
     // Ensure page always starts from the top on load/reload
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
-    
+
     // Initialize Lenis smooth scrolling
     const lenis = new Lenis({
-      duration: 1.5,
+      duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       smoothWheel: true,
-      wheelMultiplier: 0.8,
+      wheelMultiplier: 1.0,
       touchMultiplier: 1.5,
       infinite: false,
       syncTouch: true,
@@ -48,7 +46,7 @@ const App = memo(function App() {
       rafId = requestAnimationFrame(raf)
     }
     rafId = requestAnimationFrame(raf)
-    
+
     // Show content with background veil
     const contentTimer = setTimeout(() => {
       setShowContent(true)
@@ -71,12 +69,12 @@ const App = memo(function App() {
     <LazyMotion features={domAnimation}>
       {/* Noise Texture Overlay */}
       <NoiseTexture />
-      
+
       {/* Back to Top Button */}
       <BackToTop />
-      
+
       {/* Fixed Header - Animated slide-in with persistent fixed positioning */}
-      <motion.div 
+      <motion.div
         style={{
           position: 'fixed',
           top: 0,
@@ -87,15 +85,15 @@ const App = memo(function App() {
           pointerEvents: 'auto'
         }}
         initial={{ y: -100, opacity: 0 }}
-        animate={{ 
-          y: showHeader ? 0 : -100, 
-          opacity: showHeader ? 1 : 0 
+        animate={{
+          y: showHeader ? 0 : -100,
+          opacity: showHeader ? 1 : 0
         }}
         transition={motionVariants.headerSlideTransition}
       >
         <Header />
       </motion.div>
-      
+
       {/* Main Content */}
       <div className="min-h-screen bg-dark-bg text-dark-text transition-colors duration-300">
         <main>

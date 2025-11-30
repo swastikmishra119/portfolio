@@ -30,20 +30,28 @@ const Header = () => {
   ]
 
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      const sections = navItems.map(item => item.href.substring(1))
-      const currentSection = sections.find(section => {
-        const element = document.getElementById(section)
-        if (element) {
-          const rect = element.getBoundingClientRect()
-          return rect.top <= 100 && rect.bottom >= 100
-        }
-        return false
-      })
-      setActiveSection(currentSection || '')
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const sections = navItems.map(item => item.href.substring(1))
+          const currentSection = sections.find(section => {
+            const element = document.getElementById(section)
+            if (element) {
+              const rect = element.getBoundingClientRect()
+              return rect.top <= 100 && rect.bottom >= 100
+            }
+            return false
+          })
+          setActiveSection(currentSection || '')
+          ticking = false;
+        });
+        ticking = true;
+      }
     }
 
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
     handleScroll() // Check initial position
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
@@ -54,8 +62,8 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo - pushed more to the left */}
           <div className="flex-shrink-0">
-            <a 
-              href="#" 
+            <a
+              href="#"
               onClick={(e) => {
                 e.preventDefault();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -75,11 +83,10 @@ const Header = () => {
                   <a
                     key={item.name}
                     href={item.href}
-                    className={`group px-3 py-2 text-sm font-medium transition-all duration-300 hover:scale-105 ${
-                      isActive 
-                        ? 'text-white' 
+                    className={`group px-3 py-2 text-sm font-medium transition-all duration-300 hover:scale-105 ${isActive
+                        ? 'text-white'
                         : 'text-gray-400'
-                    }`}
+                      }`}
                     style={isActive ? {
                       textShadow: '0 0 15px rgba(255, 255, 255, 0.8), 0 0 25px rgba(255, 255, 255, 0.4)',
                     } : {}}
@@ -90,7 +97,7 @@ const Header = () => {
                       <span className="group-hover:hidden">{item.name}</span>
                     )}
                     {!isActive && (
-                      <span 
+                      <span
                         className="hidden group-hover:inline-block bg-gradient-to-r from-purple-500 via-purple-600 to-purple-500 dark:from-purple-500 dark:via-purple-600 dark:to-purple-500 bg-clip-text text-transparent animate-pulse"
                         style={{
                           backgroundSize: '200% 100%',
@@ -148,11 +155,10 @@ const Header = () => {
                   <a
                     key={item.name}
                     href={item.href}
-                    className={`block px-3 py-2 text-base font-medium transition-all duration-300 ${
-                      isActive 
-                        ? 'text-white' 
+                    className={`block px-3 py-2 text-base font-medium transition-all duration-300 ${isActive
+                        ? 'text-white'
                         : 'text-dark-text-secondary hover:text-secondary-400'
-                    }`}
+                      }`}
                     style={isActive ? {
                       textShadow: '0 0 10px rgba(255, 255, 255, 0.3)',
                     } : {}}

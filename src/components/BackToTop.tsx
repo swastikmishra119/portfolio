@@ -6,15 +6,23 @@ const BackToTop = () => {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
+    let ticking = false;
+
     const toggleVisibility = () => {
-      if (window.scrollY > 500) {
-        setIsVisible(true)
-      } else {
-        setIsVisible(false)
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          if (window.scrollY > 500) {
+            setIsVisible(true)
+          } else {
+            setIsVisible(false)
+          }
+          ticking = false;
+        });
+        ticking = true;
       }
     }
 
-    window.addEventListener('scroll', toggleVisibility)
+    window.addEventListener('scroll', toggleVisibility, { passive: true })
     return () => window.removeEventListener('scroll', toggleVisibility)
   }, [])
 
@@ -34,7 +42,7 @@ const BackToTop = () => {
           initial={{ opacity: 0, scale: 0, y: 100 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0, y: 100 }}
-          whileHover={{ 
+          whileHover={{
             scale: 1.2,
             y: -4,
             transition: { duration: 0.2 }
